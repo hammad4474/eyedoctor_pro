@@ -41,7 +41,7 @@ class ChatCard extends StatelessWidget {
             child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Text(
-            "Hey! am chat bot",
+            "Hey! this code is pushed by hammad",
             style: GoogleFonts.nunitoSans(
               fontSize: 16,
               fontWeight: FontWeight.bold,
