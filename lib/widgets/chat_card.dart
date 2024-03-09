@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ChatCard extends StatelessWidget {
-  final Color color1;
   final bool fromSender;
-  const ChatCard({super.key, required this.color1, required this.fromSender});
+  const ChatCard({super.key, required this.fromSender});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +25,7 @@ class ChatCard extends StatelessWidget {
         height: 54,
         // width: 260,
         decoration: BoxDecoration(
-          color: color1,
+          color: fromSender ? Colors.white : Colors.blue,
           borderRadius: fromSender
               ? BorderRadius.only(
                   bottomLeft: Radius.circular(20),
