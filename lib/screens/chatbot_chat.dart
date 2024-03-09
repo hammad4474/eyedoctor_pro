@@ -102,14 +102,14 @@ class _ChatbotChatScreenState extends State<ChatbotChatScreen> {
                         ? Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              ChatCard(color1: Colors.white, fromSender: true),
+                              ChatCard(fromSender: true),
                             ],
                           )
                         : Row(
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              ChatCard(color1: Colors.blue, fromSender: false),
+                              ChatCard(fromSender: false),
                             ],
                           );
                   },
