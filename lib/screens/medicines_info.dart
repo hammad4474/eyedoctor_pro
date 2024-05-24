@@ -39,7 +39,7 @@ class _MedicineScreenState extends State<MedicineScreen> {
               ),
             ),
             const SizedBox(
-              height: 40,
+              height: 20,
             ),
             Container(
               height: 183,
@@ -87,7 +87,7 @@ class _MedicineScreenState extends State<MedicineScreen> {
               ),
             ),
             const SizedBox(
-              height: 40,
+              height: 20,
             ),
             Card(
               elevation: 4,
