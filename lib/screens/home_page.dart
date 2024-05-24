@@ -1,9 +1,9 @@
-import 'package:eyedoctor_pro/screens/chatbot_chat.dart';
+import 'package:eyedoctor_pro/screens/chatbot_intro.dart';
+import 'package:eyedoctor_pro/screens/gallery_test.dart';
+import 'package:eyedoctor_pro/screens/image_test_result.dart';
 import 'package:eyedoctor_pro/screens/medicines_info.dart';
 import 'package:eyedoctor_pro/widgets/button_container.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -99,14 +99,21 @@ class _HomeScreenState extends State<HomeScreen> {
               //mainAxisAlignment: MainAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Button_container(text: 'Take a test', onButtonPressed: () {}),
+                Button_container(
+                    text: 'Take a test',
+                    onButtonPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ImageScreen()));
+                    }),
                 Button_container(
                     text: 'Chatbot',
                     onButtonPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ChatbotChatScreen()));
+                              builder: (context) => ChatbotHomeScreen()));
                     }),
               ],
             ),
@@ -117,7 +124,14 @@ class _HomeScreenState extends State<HomeScreen> {
               //mainAxisAlignment: MainAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Button_container(text: 'Past result', onButtonPressed: () {}),
+                Button_container(
+                    text: 'Past result',
+                    onButtonPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => GalleryTest()));
+                    }),
                 Button_container(
                     text: 'Medication',
                     onButtonPressed: () {

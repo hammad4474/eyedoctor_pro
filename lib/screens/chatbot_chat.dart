@@ -1,7 +1,5 @@
 import 'package:eyedoctor_pro/widgets/chat_card.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -101,14 +99,14 @@ class _ChatbotChatScreenState extends State<ChatbotChatScreen> {
                     return index % 2 == 0
                         ? Row(
                             mainAxisSize: MainAxisSize.min,
-                            children: [
+                            children: const [
                               ChatCard(fromSender: true),
                             ],
                           )
                         : Row(
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
+                            children: const [
                               ChatCard(fromSender: false),
                             ],
                           );
