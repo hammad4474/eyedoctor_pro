@@ -3,6 +3,7 @@ import 'package:eyedoctor_pro/screens/gallery_test.dart';
 import 'package:eyedoctor_pro/screens/image_test_result.dart';
 import 'package:eyedoctor_pro/screens/medicines_info.dart';
 import 'package:eyedoctor_pro/widgets/button_container.dart';
+import 'package:eyedoctor_pro/widgets/navogation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -142,46 +143,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     }),
               ],
             ),
+            SizedBox(
+              height: 40,
+            ),
+            Center(child: CustomNavigator()),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Color(0xff4497be),
-        selectedLabelStyle:
-            TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-        unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
-        elevation: 5,
-
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.file),
-            label: 'Reports',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.comment),
-            label: 'ChatBot',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.tablets),
-            label: 'Medication',
-          ),
-        ],
-        // currentIndex: _currentIndex,
-        // onTap: (index) {
-        //   setState(() {
-        //     _currentIndex = index;
-        //   });
-        // },
-      ),
+      // bottomNavigationBar:
     ));
   }
 }
-
 
 /*Scaffold(
   body: _getBody(),

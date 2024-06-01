@@ -1,7 +1,12 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:eyedoctor_pro/widgets/button_container.dart';
+import 'package:eyedoctor_pro/widgets/navogation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class ImageScreen extends StatefulWidget {
   const ImageScreen({super.key});
@@ -11,6 +16,94 @@ class ImageScreen extends StatefulWidget {
 }
 
 class _ImageScreenState extends State<ImageScreen> {
+  File? _selectedImage;
+  String _textResult = "Text result of the image";
+  bool isLoading = false;
+
+  // Gallery image upload function
+
+  Future<void> _pickImageGallery() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+
+      await _uploadImage(_selectedImage!);
+    }
+  }
+
+  // camera
+  Future<void> _pickImageCamera() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+
+      await _uploadImage(_selectedImage!);
+    }
+  }
+
+  // API handling function
+  Future<void> _uploadImage(File image) async {
+    setState(() {
+      isLoading = true;
+      _textResult = 'Processing disease.....';
+    });
+
+    final uri =
+        Uri.parse('https://pelican-accurate-grizzly.ngrok-free.app/detect');
+    final request = http.MultipartRequest('POST', uri);
+    request.files.add(await http.MultipartFile.fromPath('image', image.path));
+
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      final responseData = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseData);
+      final String predictedLabel = jsonResponse['predicted_label'];
+
+      ContentType contentType;
+      String title;
+      String message;
+      if (predictedLabel == 'Normal') {
+        contentType = ContentType.success;
+        title = 'Congrats';
+        message = 'You don\'t have the disease';
+      } else {
+        contentType = ContentType.failure;
+        title = 'Oops';
+        message = 'Sadly you have the disease';
+      }
+
+      final snackBar = SnackBar(
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          content: AwesomeSnackbarContent(
+              title: title, message: message, contentType: contentType));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+      // setState(() {
+      //   isLoading = false;
+      // });
+
+      setState(() {
+        isLoading = false;
+        _textResult = predictedLabel;
+      });
+      print('Upload successful: $predictedLabel');
+    } else {
+      setState(() {
+        _textResult = 'Upload failed: ${response.statusCode}';
+      });
+      print('Upload failed: ${response.statusCode}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -33,7 +126,7 @@ class _ImageScreenState extends State<ImageScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       'Gallery',
@@ -42,75 +135,48 @@ class _ImageScreenState extends State<ImageScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.menu),
-                      onPressed: () {},
-                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 20),
               Center(
-                child: Text(
-                  'Select Image From',
-                  style: GoogleFonts.nunitoSans(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: isLoading
+                    ? CircularProgressIndicator()
+                    : Text(
+                        _textResult ?? 'Text result of the image',
+                        style: GoogleFonts.nunitoSans(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
               const SizedBox(height: 20),
               Container(
                   height: 320,
                   width: 300,
-                  child: Image(image: AssetImage('assets/images/kugoo.jpeg'))),
+                  child: _selectedImage == null
+                      ? Image(
+                          image: AssetImage('assets/images/Rectangle 3.png'))
+                      : Image.file(_selectedImage!)),
               const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  GallerButton(text: 'Gallery', onButtonPressed: () {}),
+                  GallerButton(
+                      text: 'Gallery', onButtonPressed: _pickImageGallery),
                   const SizedBox(width: 20),
                   CameraButton(
                     text: 'Camera',
-                    onButtonPressed: () {},
+                    onButtonPressed: _pickImageCamera,
                   ),
                 ],
               ),
-              const Spacer(),
+              SizedBox(
+                height: 100,
+              ),
+              CustomNavigator(),
             ],
           ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: const Color(0xff4497be),
-          selectedLabelStyle:
-              const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-          elevation: 5,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(FontAwesomeIcons.file),
-              label: 'Reports',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(FontAwesomeIcons.comment),
-              label: 'ChatBot',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(FontAwesomeIcons.tablets),
-              label: 'Medication',
-            ),
-          ],
-          // currentIndex: _currentIndex,
-          // onTap: (index) {
-          //   setState(() {
-          //     _currentIndex = index;
-          //   });
-          // },
         ),
       ),
     );

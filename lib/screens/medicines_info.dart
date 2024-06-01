@@ -1,4 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:eyedoctor_pro/widgets/navogation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -128,41 +129,12 @@ class _MedicineScreenState extends State<MedicineScreen> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 40,
+            ),
+            CustomNavigator(),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Color(0xff4497be),
-        selectedLabelStyle:
-            TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-        unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
-        elevation: 5,
-
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.file),
-            label: 'Reports',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.comment),
-            label: 'ChatBot',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.tablets),
-            label: 'Medication',
-          ),
-        ],
-        // currentIndex: _currentIndex,
-        // onTap: (index) {
-        //   setState(() {
-        //     _currentIndex = index;
-        //   });
-        // },
       ),
     ));
   }

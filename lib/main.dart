@@ -1,4 +1,5 @@
 import 'package:eyedoctor_pro/screens/home_page.dart';
+import 'package:eyedoctor_pro/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(useMaterial3: true, fontFamily: 'Nunito'),
-      home: HomeScreen(),
+      home: SplashScreen(),
     );
   }
 }
