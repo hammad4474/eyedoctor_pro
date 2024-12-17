@@ -1,5 +1,7 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:eyedoctor_pro/auth/login_screen.dart';
+import 'package:eyedoctor_pro/auth/signup_screen.dart';
 import 'package:eyedoctor_pro/screens/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -18,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(Duration(seconds: 5), () {
       setState(() {
         _showText = true;
       });
@@ -29,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return AnimatedSplashScreen(
         splashIconSize: 400,
-        duration: 20000,
+        duration: 6000,
         backgroundColor: Color(0xffceecfa),
         splash: Column(
           children: [
@@ -39,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             AnimatedOpacity(
               opacity: _showText ? 1.0 : 0.0,
-              duration: Duration(milliseconds: 10000),
+              duration: Duration(milliseconds: 4000),
               child: AnimatedTextKit(animatedTexts: [
                 TyperAnimatedText('Eye Doctor Pro',
                     textStyle: GoogleFonts.bebasNeue(
@@ -50,6 +52,6 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ],
         ),
-        nextScreen: HomeScreen());
+        nextScreen: SignupScreen());
   }
 }

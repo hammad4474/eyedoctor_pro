@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "985161071274",
+    "project_id": "eyedoctorpro",
+    "storage_bucket": "eyedoctorpro.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:985161071274:android:8688e083cb09df54feaed3",
+        "android_client_info": {
+          "package_name": "com.example.eyedoctor_pro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1kkkTGG8K4ISnsjdpN6ebrVTdB4fnWm8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

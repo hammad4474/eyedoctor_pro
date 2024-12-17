@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eyedoctor_pro/screens/chatbot_chat.dart';
 import 'package:eyedoctor_pro/widgets/button_container.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -14,6 +16,31 @@ class ChatbotHomeScreen extends StatefulWidget {
 }
 
 class _ChatbotHomeScreenState extends State<ChatbotHomeScreen> {
+  String? userName;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserName();
+  }
+
+  Future<void> _getUserName() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        setState(() {
+          userName = userDoc['name'];
+        });
+      }
+    } catch (e) {
+      print('error fetcing user name');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -47,7 +74,7 @@ class _ChatbotHomeScreenState extends State<ChatbotHomeScreen> {
                     ),
                     Container(
                       height: 50,
-                      width: 120,
+                      width: 130,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(30),
@@ -58,7 +85,9 @@ class _ChatbotHomeScreenState extends State<ChatbotHomeScreen> {
                               onPressed: () {},
                               icon: Icon(Icons.supervised_user_circle)),
                           Text(
-                            'Hey, Hammad',
+                            userName != null
+                                ? "Hello, $userName!"
+                                : "Loading...",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 10),
                           )

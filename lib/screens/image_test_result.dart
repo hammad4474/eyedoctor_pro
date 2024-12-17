@@ -1,12 +1,16 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eyedoctor_pro/widgets/button_container.dart';
 import 'package:eyedoctor_pro/widgets/navogation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:intl/intl.dart';
 
 class ImageScreen extends StatefulWidget {
   const ImageScreen({super.key});
@@ -19,37 +23,91 @@ class _ImageScreenState extends State<ImageScreen> {
   File? _selectedImage;
   String _textResult = "Text result of the image";
   bool isLoading = false;
+  String? userName;
 
-  // Gallery image upload function
+  @override
+  void initState() {
+    super.initState();
+    _getUserName();
+  }
+
+  Future<void> _getUserName() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        setState(() {
+          userName = userDoc['name'];
+        });
+      }
+    } catch (e) {
+      print('error fetcing user name');
+    }
+  }
+
+  Future<void> _storeResultInFirestore(String result) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      String uid = user.uid;
+
+      String date = DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now());
+
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('users');
+
+      await users.doc(uid).collection('testResults').add({
+        'result': result,
+        'date': date,
+        'username': userName ?? 'Anonymous',
+      });
+      print('result stored successfully in Firestore');
+    } else {
+      print('User is not logged in');
+    }
+  }
+
 
   Future<void> _pickImageGallery() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
+      File? croppedFile = await _cropImage(imageFile: File(pickedFile.path));
       setState(() {
-        _selectedImage = File(pickedFile.path);
+        _selectedImage = croppedFile ?? File(pickedFile.path);
       });
 
       await _uploadImage(_selectedImage!);
     }
   }
 
-  // camera
   Future<void> _pickImageCamera() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
+      File? croppedFile = await _cropImage(imageFile: File(pickedFile.path));
       setState(() {
-        _selectedImage = File(pickedFile.path);
+        _selectedImage = croppedFile ?? File(pickedFile.path);
       });
 
       await _uploadImage(_selectedImage!);
     }
   }
 
+  Future<File?> _cropImage({required File imageFile}) async {
+    CroppedFile? croppedImage =
+        await ImageCropper().cropImage(sourcePath: imageFile.path);
+    if (croppedImage == null) return null;
+    return File(croppedImage.path);
+  }
+
   // API handling function
+
   Future<void> _uploadImage(File image) async {
     setState(() {
       isLoading = true;
@@ -57,28 +115,51 @@ class _ImageScreenState extends State<ImageScreen> {
     });
 
     final uri =
-        Uri.parse('https://pelican-accurate-grizzly.ngrok-free.app/detect');
+        Uri.parse('https://pelican-accurate-grizzly.ngrok-free.app/predict');
     final request = http.MultipartRequest('POST', uri);
-    request.files.add(await http.MultipartFile.fromPath('image', image.path));
+    request.files.add(await http.MultipartFile.fromPath('file', image.path));
 
     final response = await request.send();
     if (response.statusCode == 200) {
       final responseData = await response.stream.bytesToString();
       final jsonResponse = jsonDecode(responseData);
-      final String predictedLabel = jsonResponse['predicted_label'];
+      // final String predictedLabel = jsonResponse['predicted_label'];
+      final String predictedLabel = jsonResponse['prediction'];
+
+      setState(() {
+        isLoading = false;
+      });
 
       ContentType contentType;
       String title;
       String message;
+
+      print(predictedLabel);
+
       if (predictedLabel == 'Normal') {
+        setState(() {
+          _textResult = 'Normal';
+        });
         contentType = ContentType.success;
         title = 'Congrats';
         message = 'You don\'t have the disease';
+      } else if (predictedLabel == 'Not an eye') {
+        setState(() {
+          _textResult = 'Not an eye';
+        });
+        contentType = ContentType.warning;
+        title = 'Warning';
+        message = 'This is not an eye image';
       } else {
+        setState(() {
+          _textResult = 'Affected';
+        });
         contentType = ContentType.failure;
         title = 'Oops';
         message = 'Sadly you have the disease';
       }
+
+      await _storeResultInFirestore(predictedLabel);
 
       final snackBar = SnackBar(
           elevation: 0,
@@ -86,10 +167,6 @@ class _ImageScreenState extends State<ImageScreen> {
           content: AwesomeSnackbarContent(
               title: title, message: message, contentType: contentType));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-      // setState(() {
-      //   isLoading = false;
-      // });
 
       setState(() {
         isLoading = false;
@@ -143,7 +220,7 @@ class _ImageScreenState extends State<ImageScreen> {
                 child: isLoading
                     ? CircularProgressIndicator()
                     : Text(
-                        _textResult ?? 'Text result of the image',
+                        _textResult,
                         style: GoogleFonts.nunitoSans(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -180,6 +257,5 @@ class _ImageScreenState extends State<ImageScreen> {
         ),
       ),
     );
-    ;
   }
 }
